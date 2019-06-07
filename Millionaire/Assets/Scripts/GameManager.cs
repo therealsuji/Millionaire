@@ -10,10 +10,13 @@ public class GameManager : MonoBehaviour
 {
 
 
-    static int noQuestions = 10;
+    static int noQuestions = 15;
     Question[] questionArray = new Question[noQuestions];
     static List<Question> unansweredQuestion;
     Question curentQuestion;
+
+    static Animator confirmPanelAnim;
+    static Animator prizeAnim;
 
     static TextMeshProUGUI questionText;
 
@@ -34,7 +37,7 @@ public class GameManager : MonoBehaviour
 
     int timeForNextQuestion = 1;
     int temporaryAnswer;
-
+    int correctAns = 0;
 
     void Awake()
     {
@@ -51,7 +54,8 @@ public class GameManager : MonoBehaviour
         answer2Text = GameObject.Find("answer2").GetComponent<TextMeshProUGUI>();
         answer3Text = GameObject.Find("answer3").GetComponent<TextMeshProUGUI>();
         answer4Text = GameObject.Find("answer4").GetComponent<TextMeshProUGUI>();
-        confirmPanel.SetActive(false);
+        confirmPanelAnim = confirmPanel.GetComponent<Animator>();
+        prizeAnim = GameObject.Find("Image").GetComponent<Animator>();
     }
 
     void Start()
@@ -63,6 +67,24 @@ public class GameManager : MonoBehaviour
             initializeQuestionArray();
             unansweredQuestion = questionArray.ToList<Question>();
         }
+
+
+
+    }
+
+    void updatePrize()
+    {
+
+        correctAns = noQuestions - unansweredQuestion.Count;
+        print(correctAns);
+        if (correctAns == 1)
+        {
+            prizeAnim.SetBool('1', true);
+
+        }
+    }
+    void Update()
+    {
         if (unansweredQuestion.Count == 0)
         {
             gameOver = true;
@@ -75,11 +97,18 @@ public class GameManager : MonoBehaviour
             setAnswersText();
             listenAnswer();
             confirmAnswer();
+            updatePrize();
         }
-
-
     }
 
+    public void confirmPanelEnableAnim()
+    {
+        confirmPanelAnim.SetBool("enabled", true);
+    }
+    public void confirmPanelDisableAnim()
+    {
+        confirmPanelAnim.SetBool("enabled", false);
+    }
 
 
     void getClickedBtn(int tempAnswer)
@@ -92,7 +121,6 @@ public class GameManager : MonoBehaviour
 
     void confirmAnswer()
     {
-        print("confiremd");
         confirmBtn.onClick.AddListener(() => checkAnswer(temporaryAnswer));
 
     }
@@ -110,14 +138,30 @@ public class GameManager : MonoBehaviour
         questionArray[7] = new Question("what is the higest place on earth", "Mount Everest", "Mauna Kea", " Mount Chimborazo", "Kangchenjunga", "Mount Everest");
         questionArray[8] = new Question("what is the higest place on earth", "Mount Everest", "Mauna Kea", " Mount Chimborazo", "Kangchenjunga", "Mount Everest");
         questionArray[9] = new Question("what is the higest place on earth", "Mount Everest", "Mauna Kea", " Mount Chimborazo", "Kangchenjunga", "Mount Everest");
-    }
+        questionArray[10] = new Question("what is the higest place on earth", "Mount Everest", "Mauna Kea", " Mount Chimborazo", "Kangchenjunga", "Mount Everest");
+        questionArray[11] = new Question("what is the higest place on earth", "Mount Everest", "Mauna Kea", " Mount Chimborazo", "Kangchenjunga", "Mount Everest");
+        questionArray[12] = new Question("what is the higest place on earth", "Mount Everest", "Mauna Kea", " Mount Chimborazo", "Kangchenjunga", "Mount Everest");
+        questionArray[13] = new Question("what is the higest place on earth", "Mount Everest", "Mauna Kea", " Mount Chimborazo", "Kangchenjunga", "Mount Everest");
+        questionArray[14] = new Question("what is the higest place on earth", "Mount Everest", "Mauna Kea", " Mount Chimborazo", "Kangchenjunga", "Mount Everest");
 
+
+    }
+    void removeListner()
+    {
+        confirmBtn.onClick.RemoveAllListeners();
+        answer1Btn.onClick.RemoveAllListeners();
+        answer2Btn.onClick.RemoveAllListeners();
+        answer3Btn.onClick.RemoveAllListeners();
+        answer4Btn.onClick.RemoveAllListeners();
+    }
     void listenAnswer()
     {
         answer1Btn.onClick.AddListener(() => getClickedBtn(1));
         answer2Btn.onClick.AddListener(() => getClickedBtn(2));
         answer3Btn.onClick.AddListener(() => getClickedBtn(3));
         answer4Btn.onClick.AddListener(() => getClickedBtn(4));
+
+
 
     }
 
@@ -128,20 +172,21 @@ public class GameManager : MonoBehaviour
 
     IEnumerator moveToNextQuestion()
     {
+        removeListner();
         unansweredQuestion.Remove(curentQuestion);
         yield return new WaitForSeconds(timeForNextQuestion);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     void checkAnswer(int btn)
     {
-        confirmPanel.SetActive(false);
         switch (btn)
         {
             case 1:
                 if (answer1Text.text == curentQuestion.getCorrectAnswer())
                 {
                     Debug.Log("Corect");
+
                 }
                 else
                 {
@@ -154,6 +199,8 @@ public class GameManager : MonoBehaviour
                 if (answer2Text.text == curentQuestion.getCorrectAnswer())
                 {
                     Debug.Log("Corect");
+
+
                 }
                 else
                 {
@@ -168,6 +215,8 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log("Corect");
 
+
+
                 }
                 else
                 {
@@ -180,6 +229,9 @@ public class GameManager : MonoBehaviour
                 if (answer4Text.text == curentQuestion.getCorrectAnswer())
                 {
                     Debug.Log("Corect");
+
+
+
 
                 }
                 else
